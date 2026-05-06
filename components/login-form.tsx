@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { AlertCircle, Eye, EyeOff, LogIn } from "lucide-react"
 import { useAuth } from "@/lib/auth-context"
@@ -12,12 +13,6 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
 import { Spinner } from "@/components/ui/spinner"
 import { ThemeToggle } from "@/components/theme-toggle"
-
-const MOCK_CREDENTIALS = [
-  { role: "Super Admin",   email: "superadmin@luzdelsol.com", password: "super123" },
-  { role: "Administrador", email: "admin@luzdelsol.com",      password: "admin123" },
-  { role: "Contador",      email: "contador@luzdelsol.com",   password: "contador123" },
-]
 
 export function LoginForm() {
   const { login, user, loading: authLoading } = useAuth()
@@ -30,7 +25,6 @@ export function LoginForm() {
   const [error, setError] = useState<string | null>(null)
   const [touched, setTouched] = useState({ email: false, password: false })
 
-  // Si ya hay sesión, redirige
   useEffect(() => {
     if (!authLoading && user) {
       const first = ROLE_MODULES[user.role][0] ?? "dashboard"
@@ -41,7 +35,7 @@ export function LoginForm() {
   const emailError =
     touched.email && (!email ? "El email es obligatorio" : !/^\S+@\S+\.\S+$/.test(email) ? "Email inválido" : "")
   const passwordError =
-    touched.password && (!password ? "La contraseña es obligatoria" : password.length < 4 ? "Mínimo 4 caracteres" : "")
+    touched.password && (!password ? "La contraseña es obligatoria" : password.length < 6 ? "Mínimo 6 caracteres" : "")
   const formValid = !emailError && !passwordError && email && password
 
   async function handleSubmit(e: React.FormEvent) {
@@ -56,13 +50,6 @@ export function LoginForm() {
       setError(res.error ?? "No se pudo iniciar sesión")
       return
     }
-  }
-
-  function fillCreds(c: { email: string; password: string }) {
-    setEmail(c.email)
-    setPassword(c.password)
-    setError(null)
-    setTouched({ email: false, password: false })
   }
 
   return (
@@ -170,24 +157,12 @@ export function LoginForm() {
             </Button>
           </form>
 
-          <div className="mt-6 rounded-lg border border-dashed border-border bg-muted/40 p-3">
-            <p className="mb-2 text-xs font-medium text-muted-foreground">
-              Credenciales de prueba (click para autocompletar):
-            </p>
-            <div className="flex flex-col gap-1.5">
-              {MOCK_CREDENTIALS.map((c) => (
-                <button
-                  key={c.email}
-                  type="button"
-                  onClick={() => fillCreds(c)}
-                  className="flex items-center justify-between rounded-md px-2 py-1.5 text-left text-xs transition hover:bg-brand-50 hover:text-brand-700 dark:hover:bg-brand-500/10 dark:hover:text-brand-200"
-                >
-                  <span className="font-medium">{c.role}</span>
-                  <span className="font-mono text-muted-foreground">{c.email}</span>
-                </button>
-              ))}
-            </div>
-          </div>
+          <p className="mt-6 text-center text-xs text-muted-foreground">
+            ¿Primer ingreso al sistema?{" "}
+            <Link href="/setup" className="font-medium text-brand-600 hover:underline dark:text-brand-300">
+              Crear el Super Admin inicial
+            </Link>
+          </p>
         </CardContent>
       </Card>
 
