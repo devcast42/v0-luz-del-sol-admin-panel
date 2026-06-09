@@ -1,13 +1,29 @@
-import { FinanzasTable } from "@/components/finanzas-table"
-import { MOCK_INGRESOS } from "@/lib/mock-data"
+import { createClient } from "@/utils/supabase/server"
+import { IngresosList } from "@/components/ingresos-list"
 
-export default function IngresosPage() {
-  return (
-    <FinanzasTable
-      titulo="Ingresos"
-      descripcion="Comisiones, alquileres y cobros de la empresa."
-      data={MOCK_INGRESOS}
-      variant="ingreso"
-    />
-  )
+export default async function IngresosPage() {
+  const supabase = await createClient()
+
+  // Fetch ingresos joining with clients
+  const { data: ingresos, error } = await supabase
+    .from("ingresos")
+    .select(`
+      *,
+      clients (
+        full_name,
+        email
+      )
+    `)
+    .order("fecha", { ascending: false })
+
+  if (error) {
+    console.error("Error fetching ingresos:", error)
+  }
+
+  // Fetch clients to populate the "Client" dropdown in the form
+  const { data: clients } = await supabase
+    .from("clients")
+    .select("id, full_name")
+
+  return <IngresosList initialIngresos={ingresos || []} clients={clients || []} />
 }

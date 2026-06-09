@@ -46,9 +46,9 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
         open={sidebarOpen}
         onOpenChange={setSidebarOpen}
       />
-      <div className="flex min-h-screen flex-1 flex-col md:pl-64">
+      <div className="flex min-h-screen flex-1 flex-col md:pl-64 min-w-0">
         <Header onMenuClick={() => setSidebarOpen(true)} />
-        <main className="flex-1 px-4 py-6 md:px-8 md:py-8">{children}</main>
+        <main className="flex-1 px-4 py-6 md:px-8 md:py-8 min-w-0">{children}</main>
       </div>
     </div>
   )

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { AlertCircle, Plus, ShieldAlert, Trash2, UserCog } from "lucide-react"
 import { toast } from "sonner"
 import { useAuth } from "@/lib/auth-context"
@@ -36,10 +36,30 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Switch } from "@/components/ui/switch"
+import { createClient } from "@/utils/supabase/client"
 
 export default function UsuariosPage() {
-  const { user, users, createUser, updateUser, deleteUser } = useAuth()
+  const { user } = useAuth()
+  const [users, setUsers] = useState<any[]>([])
   const [open, setOpen] = useState(false)
+  const supabase = createClient()
+
+  useEffect(() => {
+    async function loadUsers() {
+      const { data } = await supabase.from('usuarios').select('*').order('created_at', { ascending: false })
+      if (data) {
+        setUsers(data.map(u => ({
+          id: u.id,
+          name: u.nombre || 'Sin nombre',
+          email: u.email,
+          role: u.rol as Role,
+          active: true,
+          createdAt: u.created_at ? new Date(u.created_at).toLocaleDateString('es-PE') : 'N/A'
+        })))
+      }
+    }
+    loadUsers()
+  }, [supabase])
 
   if (!user) return null
 
@@ -69,7 +89,7 @@ export default function UsuariosPage() {
             Gestión de Usuarios
           </h2>
           <p className="text-sm text-muted-foreground">
-            {user.role === "super_admin"
+            {user.role === "SUPER_ADMIN"
               ? "Como Super Admin puedes crear Administradores y Contadores."
               : "Como Administrador puedes crear Contadores."}
           </p>
@@ -84,13 +104,8 @@ export default function UsuariosPage() {
             allowedRoles={allowedRoles}
             onClose={() => setOpen(false)}
             onCreate={(data) => {
-              const res = createUser(data)
-              if (!res.ok) {
-                toast.error(res.error ?? "No se pudo crear el usuario")
-                return false
-              }
-              toast.success("Usuario creado correctamente")
-              return true
+              toast.error("Para crear usuarios de Auth se requiere una Edge Function (backend).")
+              return false
             }}
           />
         </Dialog>
@@ -141,12 +156,12 @@ export default function UsuariosPage() {
             <TableBody>
               {users.map((u) => {
                 const isSelf = u.id === user.id
-                // Un admin no puede tocar a super_admin u otros admins
+                // Un admin no puede tocar a SUPER_ADMIN u otros admins
                 const canEdit =
-                  user.role === "super_admin"
+                  user.role === "SUPER_ADMIN"
                     ? !isSelf
-                    : user.role === "admin"
-                      ? u.role === "contador"
+                    : user.role === "ADMIN"
+                      ? u.role === "CONTADOR"
                       : false
                 return (
                   <TableRow key={u.id}>
@@ -161,14 +176,14 @@ export default function UsuariosPage() {
                       <Badge
                         variant="outline"
                         className={
-                          u.role === "super_admin"
-                            ? "border-brand-300 bg-brand-100 text-brand-800 dark:border-brand-500/40 dark:bg-brand-500/15 dark:text-brand-200"
-                            : u.role === "admin"
-                              ? "border-brand-200 bg-brand-50 text-brand-700 dark:border-brand-500/30 dark:bg-brand-500/10 dark:text-brand-200"
+                          u.role === "SUPER_ADMIN"
+                            ? "border-brand-300 bg-brand-100 text-brand-800"
+                            : u.role === "ADMIN"
+                              ? "border-brand-200 bg-brand-50 text-brand-700"
                               : "border-border bg-muted text-muted-foreground"
                         }
                       >
-                        {ROLE_LABELS[u.role]}
+                        {ROLE_LABELS[u.role] || u.role}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-muted-foreground">{u.createdAt}</TableCell>
@@ -177,8 +192,7 @@ export default function UsuariosPage() {
                         checked={u.active}
                         disabled={!canEdit}
                         onCheckedChange={(v) => {
-                          updateUser(u.id, { active: v })
-                          toast.success(v ? "Usuario activado" : "Usuario desactivado")
+                          toast.error("Para desactivar usuarios en Auth se requiere una Edge Function.")
                         }}
                       />
                     </TableCell>
@@ -189,8 +203,7 @@ export default function UsuariosPage() {
                         disabled={!canEdit}
                         onClick={() => {
                           if (confirm(`¿Eliminar a ${u.name}?`)) {
-                            deleteUser(u.id)
-                            toast.success("Usuario eliminado")
+                            toast.error("Para eliminar usuarios en Auth se requiere una Edge Function.")
                           }
                         }}
                         aria-label={`Eliminar ${u.name}`}
@@ -221,7 +234,7 @@ function NuevoUsuarioDialog({
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [role, setRole] = useState<Role>(allowedRoles[0] ?? "contador")
+  const [role, setRole] = useState<Role>(allowedRoles[0] ?? "CONTADOR")
   const [touched, setTouched] = useState(false)
 
   const errors = {

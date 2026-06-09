@@ -17,6 +17,7 @@ const MOCK_CREDENTIALS = [
   { role: "Super Admin",   email: "superadmin@luzdelsol.com", password: "super123" },
   { role: "Administrador", email: "admin@luzdelsol.com",      password: "admin123" },
   { role: "Contador",      email: "contador@luzdelsol.com",   password: "contador123" },
+  { role: "Asesor",      email: "asesor@luzdelsol.com",   password: "asesor123" },
 ]
 
 export function LoginForm() {
