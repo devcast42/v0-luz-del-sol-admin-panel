@@ -5,49 +5,40 @@ import type { ModuleKey, Role } from "./types"
  * Cambiar aquí define a qué módulos accede cada rol en el sidebar y rutas.
  */
 export const ROLE_MODULES: Record<Role, ModuleKey[]> = {
-  SUPER_ADMIN: [
+  super_admin: [
     "dashboard",
     "clientes",
     "conversaciones",
     "agenda",
-    "tareas",
     "ingresos",
     "egresos",
-    "arqueo",
     "reportes",
     "usuarios",
-    "terrenos",
   ],
-  ADMIN: [
+  admin: [
     "dashboard",
     "clientes",
     "conversaciones",
     "agenda",
-    "tareas",
     "ingresos",
     "egresos",
-    "arqueo",
     "reportes",
     "usuarios",
-    "terrenos",
   ],
-  CONTADOR: ["dashboard", "ingresos", "egresos", "arqueo", "reportes"],
-  ASESOR: ["dashboard", "clientes", "conversaciones", "agenda", "tareas", "terrenos", "egresos"],
+  contador: ["ingresos", "egresos", "reportes"],
 }
 
 /** Roles que un rol determinado tiene permitido crear desde Gestión de Usuarios. */
 export const CREATABLE_ROLES: Record<Role, Role[]> = {
-  SUPER_ADMIN: ["ADMIN", "CONTADOR", "ASESOR"],
-  ADMIN: ["CONTADOR", "ASESOR"],
-  CONTADOR: [],
-  ASESOR: [],
+  super_admin: ["admin", "contador"],
+  admin: ["contador"],
+  contador: [],
 }
 
 export const ROLE_LABELS: Record<Role, string> = {
-  SUPER_ADMIN: "Super Admin",
-  ADMIN: "Administrador",
-  CONTADOR: "Contador",
-  ASESOR: "Asesor",
+  super_admin: "Super Admin",
+  admin: "Administrador",
+  contador: "Contador",
 }
 
 export function canAccess(role: Role, module: ModuleKey): boolean {
@@ -55,5 +46,5 @@ export function canAccess(role: Role, module: ModuleKey): boolean {
 }
 
 export function canManageUsers(role: Role): boolean {
-  return role === "SUPER_ADMIN" || role === "ADMIN"
+  return role === "super_admin" || role === "admin"
 }

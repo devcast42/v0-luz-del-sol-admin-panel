@@ -1,9 +1,10 @@
-export type Role = "SUPER_ADMIN" | "ADMIN" | "CONTADOR" | "ASESOR"
+export type Role = "super_admin" | "admin" | "contador"
 
 export interface User {
   id: string
   name: string
   email: string
+  password: string // mock — en producción nunca se guarda en cliente
   role: Role
   avatarUrl?: string
   createdAt: string
@@ -19,9 +20,6 @@ export type ModuleKey =
   | "egresos"
   | "reportes"
   | "usuarios"
-  | "terrenos"
-  | "arqueo"
-  | "tareas"
 
 export interface Cliente {
   id: string

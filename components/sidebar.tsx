@@ -13,15 +13,12 @@ import {
   Users,
   UsersRound,
   X,
-  Home,
-  ListTodo,
-  Calculator,
 } from "lucide-react"
 import type { ComponentType } from "react"
 import { ROLE_MODULES } from "@/lib/permissions"
 import type { ModuleKey, Role } from "@/lib/types"
 import { cn } from "@/lib/utils"
-import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet"
+import { Sheet, SheetContent } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 
 interface NavItem {
@@ -37,11 +34,8 @@ const NAV_ITEMS: NavItem[] = [
   { key: "clientes",       label: "Clientes",       href: "/clientes",       icon: UsersRound,      group: "Principal" },
   { key: "conversaciones", label: "Conversaciones", href: "/conversaciones", icon: MessageSquare,   group: "Principal" },
   { key: "agenda",         label: "Agenda",         href: "/agenda",         icon: CalendarDays,    group: "Principal" },
-  { key: "tareas",         label: "Tareas",         href: "/tareas",         icon: ListTodo,        group: "Principal" },
-  { key: "terrenos",       label: "Catálogo",       href: "/terrenos",       icon: Home,            group: "Principal" },
   { key: "ingresos",       label: "Ingresos",       href: "/ingresos",       icon: TrendingUp,      group: "Finanzas"  },
   { key: "egresos",        label: "Egresos",        href: "/egresos",        icon: TrendingDown,    group: "Finanzas"  },
-  { key: "arqueo",         label: "Arqueo de Caja", href: "/arqueo",         icon: Calculator,      group: "Finanzas"  },
   { key: "reportes",       label: "Reportes",       href: "/reportes",       icon: ReceiptText,     group: "Finanzas"  },
   { key: "usuarios",       label: "Usuarios",       href: "/usuarios",       icon: Users,           group: "Administración" },
 ]
@@ -66,8 +60,6 @@ export function Sidebar({ role, open, onOpenChange }: SidebarProps) {
       {/* Mobile / tablet */}
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent side="left" className="w-72 border-sidebar-border bg-sidebar p-0">
-          <SheetTitle className="sr-only">Menú de Navegación</SheetTitle>
-          <SheetDescription className="sr-only">Enlaces principales del sistema</SheetDescription>
           <div className="flex items-center justify-end p-2 md:hidden">
             <Button
               variant="ghost"
